@@ -9,14 +9,21 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "pnpm --parallel --filter @chat/server --filter @chat/client dev",
-    "dev:server": "pnpm --filter @chat/server dev",
-    "dev:client": "pnpm --filter @chat/client dev",
+    "dev": "dotenv -e .env -- pnpm --parallel --filter @chat/server --filter @chat/client dev",
+    "dev:server": "dotenv -e .env -- pnpm --filter @chat/server dev",
+    "dev:client": "dotenv -e .env -- pnpm --filter @chat/client dev",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "migration:run": "pnpm --filter @chat/server migration:run",
-    "migration:generate": "pnpm --filter @chat/server migration:generate"
+    "migration:generate": "pnpm --filter @chat/server migration:generate",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up --build -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down"
   },
   "author": "Radovan Kuka <kuka.radovan@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv-cli": "^10.0.0"
+  }
 }

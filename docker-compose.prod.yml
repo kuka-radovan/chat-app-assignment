@@ -1,0 +1,46 @@
+name: chat-app-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ux-tweak-chat}
+      POSTGRES_USER: ${POSTGRES_USER:-uxtweak}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-P@ssw0rd}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uxtweak} -d ${POSTGRES_DB:-ux-tweak-chat}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  server:
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    environment:
+      NODE_ENV: production
+      SERVER_PORT: ${SERVER_PORT:-3000}
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-postgresql://uxtweak:P%40ssw0rd@postgres:5432/ux-tweak-chat}
+      CORS_ORIGIN: http://localhost:${PROXY_PORT:-8080}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: docker/client/Dockerfile
+    environment:
+      SERVER_PORT: ${SERVER_PORT:-3000}
+    ports:
+      - "${PROXY_PORT:-8080}:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

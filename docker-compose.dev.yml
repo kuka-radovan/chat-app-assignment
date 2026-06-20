@@ -1,0 +1,60 @@
+name: chat-app-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ux-tweak-chat}
+      POSTGRES_USER: ${POSTGRES_USER:-uxtweak}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-P@ssw0rd}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uxtweak} -d ${POSTGRES_DB:-ux-tweak-chat}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  server:
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      SERVER_PORT: ${SERVER_PORT:-3000}
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-postgresql://uxtweak:P%40ssw0rd@postgres:5432/ux-tweak-chat}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:9000}
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "${SERVER_PORT:-3000}:${SERVER_PORT:-3000}"
+    volumes:
+      - .:/app
+      - dev_node_modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: pnpm --filter @chat/server dev
+
+  client:
+    build:
+      context: .
+      dockerfile: docker/client/Dockerfile.dev
+    environment:
+      DOCKER: "true"
+      CLIENT_PORT: ${CLIENT_PORT:-9000}
+      CHOKIDAR_USEPOLLING: "true"
+      QUASAR_PREPARE: "true"
+    ports:
+      - "${CLIENT_PORT:-9000}:${CLIENT_PORT:-9000}"
+    volumes:
+      - .:/app
+      - dev_node_modules:/app/node_modules
+    depends_on:
+      - server
+    command: pnpm --filter @chat/client dev
+
+volumes:
+  postgres_data_dev:
+  dev_node_modules:
