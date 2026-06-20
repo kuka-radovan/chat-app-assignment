@@ -123,7 +123,10 @@ dist
 .tern-port
 
 # Stores VSCode versions used for testing VSCode extensions
+.vscode/*
 .vscode-test
+!.vscode/extensions.json
+.idea/
 
 # pnpm
 .pnpm-store
@@ -141,3 +144,11 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Quasar core related directories
+.quasar
+/dist
+/quasar.config.*.temporary.compiled*
+
+# OS
+.DS_Store

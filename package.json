@@ -1,0 +1,22 @@
+{
+  "name": "chat-app-assignment",
+  "description": "UXtweak assignment",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.js",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @chat/server --filter @chat/client dev",
+    "dev:server": "pnpm --filter @chat/server dev",
+    "dev:client": "pnpm --filter @chat/client dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "migration:run": "pnpm --filter @chat/server migration:run",
+    "migration:generate": "pnpm --filter @chat/server migration:generate"
+  },
+  "author": "Radovan Kuka <kuka.radovan@gmail.com>",
+  "license": "ISC"
+}
