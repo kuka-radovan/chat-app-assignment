@@ -40,7 +40,14 @@ export default defineConfig((/* ctx */) => {
       typescript: {
         strict: true,
         vueShim: true,
-        // extendTsConfig (tsConfig) {}
+        extendTsConfig(tsConfig) {
+          tsConfig.compilerOptions ??= {};
+          tsConfig.compilerOptions.paths = {
+            ...tsConfig.compilerOptions.paths,
+            '@chat/shared': ['../../packages/shared/src/index.ts'],
+            '@chat/shared/*': ['../../packages/shared/src/*'],
+          };
+        },
       },
 
       // https://v2.quasar.dev/quasar-cli-vite/page-routing-with-vue-router#filename-based-routing
