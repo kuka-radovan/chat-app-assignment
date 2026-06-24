@@ -17,7 +17,7 @@ RUN pnpm --filter @chat/client build
 
 FROM nginx:1.27-alpine AS runner
 
-COPY docker/client/nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY apps/client/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=builder /app/apps/client/dist/spa /usr/share/nginx/html
 
 EXPOSE 80

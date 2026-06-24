@@ -4,16 +4,15 @@
 
 ## Installation
 
-The app can run entirely in Docker.
+The app can run entirely in Docker — no manual setup beyond Docker itself.
 
 ### Prerequisites
 
 - Docker Desktop (or Docker Engine + Compose v2)
-- Copy `.env.example` to `.env` and adjust values if needed
 
 ### Development (hot reload)
 
-Source code is bind-mounted into the containers. Changes to the server (NestJS watch) and client (Quasar/Vite HMR) are reflected immediately.
+Copy `.env.example` to `.env` and adjust as needed, then start everything. Dependencies install inside the containers on startup.
 
 ```bash
 pnpm docker:dev
@@ -23,7 +22,7 @@ pnpm docker:dev
 |----------|------------------------------------------|
 | Client   | http://localhost:`CLIENT_PORT` (9000)    |
 | Server   | http://localhost:`SERVER_PORT` (3000)    |
-| Postgres | localhost:`POSTGRES_PORT` (5432)         |
+| Postgres | localhost:`DATABASE_PORT` (5432)         |
 
 Stop:
 
@@ -31,15 +30,11 @@ Stop:
 pnpm docker:dev:down
 ```
 
-Run database migrations manually (once TypeORM migrations are in place):
-
-```bash
-docker compose -f docker-compose.dev.yml exec server pnpm migration:run
-```
+The first start may take a few minutes while dependencies download. Later starts are faster.
 
 ### Production (deployment)
 
-Builds optimized images: the server runs migrations on startup, the client is served by nginx with API/WebSocket proxying to the backend.
+Copy `.env.example` to `.env` and adjust as needed, then build images and start. Migrations run on server startup; the client is served via nginx.
 
 ```bash
 pnpm docker:prod
@@ -57,9 +52,10 @@ pnpm docker:prod:down
 
 ### Local development without Docker
 
-Run only Postgres in Docker, then start the apps on the host (loads ports from `.env` via `dotenv-cli`):
+Requires Node.js 24+ and pnpm. Set `DATABASE_HOST=localhost` in `.env`, start Postgres only, then:
 
 ```bash
+pnpm install
 docker compose -f docker-compose.dev.yml up postgres -d
 pnpm dev
 ```

@@ -3,16 +3,19 @@ name: chat-app-dev
 services:
   postgres:
     image: postgres:16-alpine
+    env_file:
+      - path: .env
+        required: true
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-ux-tweak-chat}
-      POSTGRES_USER: ${POSTGRES_USER:-uxtweak}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-P@ssw0rd}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${DATABASE_PORT}:5432"
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uxtweak} -d ${POSTGRES_DB:-ux-tweak-chat}"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -20,40 +23,48 @@ services:
   server:
     build:
       context: .
-      dockerfile: docker/server/Dockerfile.dev
+      dockerfile: apps/server/Dockerfile.dev
+    env_file:
+      - path: .env
+        required: true
     environment:
-      NODE_ENV: development
-      SERVER_PORT: ${SERVER_PORT:-3000}
-      DATABASE_URL: ${DOCKER_DATABASE_URL:-postgresql://uxtweak:P%40ssw0rd@postgres:5432/ux-tweak-chat}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:9000}
       CHOKIDAR_USEPOLLING: "true"
     ports:
-      - "${SERVER_PORT:-3000}:${SERVER_PORT:-3000}"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     volumes:
       - .:/app
       - dev_node_modules:/app/node_modules
     depends_on:
       postgres:
         condition: service_healthy
-    command: pnpm --filter @chat/server dev
+    command: >
+      sh -ec "pnpm install --frozen-lockfile --ignore-scripts &&
+      pnpm --filter @chat/client exec quasar prepare --silent &&
+      pnpm --filter @chat/server dev"
 
   client:
     build:
       context: .
-      dockerfile: docker/client/Dockerfile.dev
+      dockerfile: apps/client/Dockerfile.dev
+    env_file:
+      - path: .env
+        required: true
     environment:
       DOCKER: "true"
-      CLIENT_PORT: ${CLIENT_PORT:-9000}
       CHOKIDAR_USEPOLLING: "true"
-      QUASAR_PREPARE: "true"
     ports:
-      - "${CLIENT_PORT:-9000}:${CLIENT_PORT:-9000}"
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
     volumes:
       - .:/app
       - dev_node_modules:/app/node_modules
     depends_on:
-      - server
-    command: pnpm --filter @chat/client dev
+      server:
+        condition: service_started
+    command: >
+      sh -ec "while [ ! -f node_modules/.modules.yaml ]; do sleep 1; done &&
+      pnpm install --frozen-lockfile --ignore-scripts &&
+      pnpm --filter @chat/client exec quasar prepare --silent &&
+      pnpm --filter @chat/client dev"
 
 volumes:
   postgres_data_dev:

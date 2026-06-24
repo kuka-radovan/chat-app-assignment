@@ -3,14 +3,17 @@ name: chat-app-prod
 services:
   postgres:
     image: postgres:16-alpine
+    env_file:
+      - path: .env
+        required: true
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-ux-tweak-chat}
-      POSTGRES_USER: ${POSTGRES_USER:-uxtweak}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-P@ssw0rd}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-uxtweak} -d ${POSTGRES_DB:-ux-tweak-chat}"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -19,12 +22,13 @@ services:
   server:
     build:
       context: .
-      dockerfile: docker/server/Dockerfile
+      dockerfile: apps/server/Dockerfile
+    env_file:
+      - path: .env
+        required: true
     environment:
       NODE_ENV: production
-      SERVER_PORT: ${SERVER_PORT:-3000}
-      DATABASE_URL: ${DOCKER_DATABASE_URL:-postgresql://uxtweak:P%40ssw0rd@postgres:5432/ux-tweak-chat}
-      CORS_ORIGIN: http://localhost:${PROXY_PORT:-8080}
+      CORS_ORIGIN: http://localhost:${PROXY_PORT}
     depends_on:
       postgres:
         condition: service_healthy
@@ -33,11 +37,12 @@ services:
   client:
     build:
       context: .
-      dockerfile: docker/client/Dockerfile
-    environment:
-      SERVER_PORT: ${SERVER_PORT:-3000}
+      dockerfile: apps/client/Dockerfile
+    env_file:
+      - path: .env
+        required: true
     ports:
-      - "${PROXY_PORT:-8080}:80"
+      - "${PROXY_PORT}:80"
     depends_on:
       - server
     restart: unless-stopped
