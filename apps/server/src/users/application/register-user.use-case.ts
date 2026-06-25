@@ -1,5 +1,5 @@
 import { Nickname } from '../domain/value-objects/nickname';
-import { NicknameAlreadyTakenError } from '../domain/value-objects/nickname';
+import { NicknameAlreadyTakenError } from '../domain/errors';
 import { User } from '../domain/user';
 import type { UserRepository } from '../domain/user.repository';
 

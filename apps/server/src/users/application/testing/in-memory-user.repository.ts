@@ -1,4 +1,4 @@
-import { NicknameAlreadyTakenError } from '../../domain/value-objects/nickname';
+import { NicknameAlreadyTakenError } from '../../domain/errors';
 import type { Nickname } from '../../domain/value-objects/nickname';
 import type { User } from '../../domain/user';
 import { UserRepository } from '../../domain/user.repository';

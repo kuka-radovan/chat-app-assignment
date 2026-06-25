@@ -1,4 +1,4 @@
-import { NicknameAlreadyTakenError } from '../domain/value-objects/nickname';
+import { NicknameAlreadyTakenError } from '../domain/errors';
 import { RegisterUserUseCase } from './register-user.use-case';
 import { InMemoryUserRepository } from './testing/in-memory-user.repository';
 

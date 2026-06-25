@@ -33,10 +33,3 @@ export class InvalidNicknameError extends Error {
     this.name = 'InvalidNicknameError';
   }
 }
-
-export class NicknameAlreadyTakenError extends Error {
-  constructor(readonly nickname: Nickname) {
-    super(`Nickname "${nickname.value}" is already taken`);
-    this.name = 'NicknameAlreadyTakenError';
-  }
-}
