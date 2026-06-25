@@ -73,9 +73,7 @@ export default defineConfig((/* ctx */) => {
         viteConf.server ??= {};
         viteConf.server.fs ??= {};
         viteConf.server.fs.strict = false;
-        viteConf.server.fs.allow = Array.from(
-          new Set([...(viteConf.server.fs.allow ?? []), '..']),
-        );
+        viteConf.server.fs.allow = Array.from(new Set([...(viteConf.server.fs.allow ?? []), '..']));
       },
       // viteVuePluginOptions: {},
 
