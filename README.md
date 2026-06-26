@@ -22,6 +22,7 @@ pnpm docker:dev
 |----------|------------------------------------------|
 | Client   | http://localhost:`CLIENT_PORT` (9000)    |
 | Server   | http://localhost:`SERVER_PORT` (3000)    |
+| API docs | http://localhost:`SERVER_PORT` (3000)/api  |
 | Postgres | localhost:`DATABASE_PORT` (5432)         |
 
 Stop:

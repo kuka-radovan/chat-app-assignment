@@ -7,6 +7,7 @@ export const configSchema = z.object({
   DATABASE_NAME: z.string(),
   DATABASE_USER: z.string(),
   DATABASE_PASSWORD: z.string(),
+  CORS_ORIGIN: z.string().default('http://localhost:9000'),
 });
 
 function pickConfig<T extends z.ZodRawShape>(
