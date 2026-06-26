@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { RegisterUserUseCase } from './application/register-user.use-case';
-import { InMemoryUserRepository } from './application/testing/in-memory-user.repository';
 import { UserRepository } from './domain/user.repository';
+import { TypeOrmUserRepository } from './infrastructure/typeorm-user.repository';
+import { UserOrmEntity } from './infrastructure/user.orm-entity';
 import { UsersController } from './transport/users.controller';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([UserOrmEntity])],
   controllers: [UsersController],
   providers: [
     {
       provide: UserRepository,
-      useClass: InMemoryUserRepository,
+      useClass: TypeOrmUserRepository,
     },
     {
       provide: RegisterUserUseCase,
