@@ -16,8 +16,6 @@
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
-    "migration:run": "dotenv -e .env -- pnpm --filter @chat/server migration:run",
-    "migration:generate": "dotenv -e .env -- pnpm --filter @chat/server migration:generate",
     "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:prod": "docker compose -f docker-compose.prod.yml up --build -d",

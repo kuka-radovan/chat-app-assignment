@@ -34,7 +34,7 @@ The first start may take a few minutes while dependencies download. Later starts
 
 ### Production (deployment)
 
-Copy `.env.example` to `.env` and adjust as needed, then build images and start. Migrations run on server startup; the client is served via nginx.
+Copy `.env.example` to `.env` and adjust as needed, then build images and start. The database schema is initialized when Postgres starts for the first time; the client is served via nginx.
 
 ```bash
 pnpm docker:prod
@@ -52,16 +52,10 @@ pnpm docker:prod:down
 
 ### Local development without Docker
 
-Requires Node.js 24+ and pnpm. Set `DATABASE_HOST=localhost` in `.env`, start Postgres only, then:
+Requires Node.js 24+ and pnpm. Set `DATABASE_HOST=localhost` in `.env`, start Postgres only (schema is applied automatically on first start), then:
 
 ```bash
 pnpm install
 docker compose -f docker-compose.dev.yml up postgres -d
 pnpm dev
-```
-
-Apply migrations against the containerized database:
-
-```bash
-pnpm migration:run
 ```
