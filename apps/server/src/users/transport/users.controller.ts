@@ -25,9 +25,11 @@ import { ListUsersUseCase } from '../application/list-users.use-case';
 import { RegisterUserUseCase } from '../application/register-user.use-case';
 import { NicknameAlreadyTakenError } from '../domain/errors';
 import { InvalidNicknameError } from '../domain/value-objects/nickname';
-import { ListUserDtoBody } from './dto/list-users.response';
+import {
+  ListUserDtoBody,
+  RegisterUserResponseBodyDto,
+} from './dto/user.response';
 import { RegisterUserBodyDto } from './dto/register-user.body';
-import { RegisterUserResponseBodyDto } from './dto/register-user.response';
 import { HttpAuthGuard, type AuthenticatedRequest } from './http-auth.guard';
 import { UserPresenter } from './presenters/user.presenter';
 
