@@ -1,4 +1,5 @@
-export const NICKNAME_MAX_LENGTH = 32;
+import { config } from '../../../config';
+
 const NICKNAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 
 export class Nickname {
@@ -11,9 +12,9 @@ export class Nickname {
       throw new InvalidNicknameError('Nickname must not be empty');
     }
 
-    if (nickname.length > NICKNAME_MAX_LENGTH) {
+    if (nickname.length > config.NICKNAME_MAX_LENGTH) {
       throw new InvalidNicknameError(
-        `Nickname must be at most ${NICKNAME_MAX_LENGTH} characters`,
+        `Nickname must be at most ${config.NICKNAME_MAX_LENGTH} characters`,
       );
     }
 

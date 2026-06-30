@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const NICKNAME_MAX_LENGTH = 32;
+
 export const configSchema = z.object({
   SERVER_PORT: z.coerce.number().default(3000),
   DATABASE_HOST: z.string().default('localhost'),
@@ -38,6 +40,7 @@ const picked = pickConfig(configSchema, process.env);
 
 export const config = {
   ...picked,
+  NICKNAME_MAX_LENGTH,
   DATABASE_URL: buildDatabaseConnectionString({
     host: picked.DATABASE_HOST,
     port: picked.DATABASE_PORT,
