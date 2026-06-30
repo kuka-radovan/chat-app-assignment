@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -27,7 +28,7 @@ import { InvalidNicknameError } from '../domain/value-objects/nickname';
 import { ListUserDtoBody } from './dto/list-users.response';
 import { RegisterUserBodyDto } from './dto/register-user.body';
 import { RegisterUserResponseBodyDto } from './dto/register-user.response';
-import { HttpAuthGuard } from './http-auth.guard';
+import { HttpAuthGuard, type AuthenticatedRequest } from './http-auth.guard';
 import { UserPresenter } from './presenters/user.presenter';
 
 @ApiTags('users')
@@ -59,6 +60,19 @@ export class UsersController {
       }
       throw error;
     }
+  }
+
+  @Get('me')
+  @UseGuards(HttpAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the authenticated user' })
+  @ApiOkResponse({ type: ListUserDtoBody })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid auth token' })
+  me(@Req() request: AuthenticatedRequest): ListUserDto {
+    return {
+      userId: request.user.id.value,
+      nickname: request.user.nickname.value,
+    };
   }
 
   @Get()
