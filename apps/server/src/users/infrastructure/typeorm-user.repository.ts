@@ -4,6 +4,7 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { NicknameAlreadyTakenError } from '../domain/errors';
 import type { User } from '../domain/user';
 import { UserRepository } from '../domain/user.repository';
+import type { AuthToken } from '../domain/value-objects/auth-token';
 import type { Nickname } from '../domain/value-objects/nickname';
 import { UserMapper } from './mappers/user.mapper';
 import { UserOrmEntity } from './user.orm-entity';
@@ -32,6 +33,14 @@ export class TypeOrmUserRepository extends UserRepository {
   async findByNickname(nickname: Nickname): Promise<User | null> {
     const entity = await this.users.findOne({
       where: { nickname: nickname.value },
+    });
+
+    return entity ? UserMapper.toDomain(entity) : null;
+  }
+
+  async findByToken(token: AuthToken): Promise<User | null> {
+    const entity = await this.users.findOne({
+      where: { token: token.value },
     });
 
     return entity ? UserMapper.toDomain(entity) : null;

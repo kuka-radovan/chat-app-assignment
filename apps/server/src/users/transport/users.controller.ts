@@ -7,14 +7,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { ListUserDto, RegisterUserResponseDto } from '@chat/shared';
 import { ListUsersUseCase } from '../application/list-users.use-case';
@@ -24,6 +27,7 @@ import { InvalidNicknameError } from '../domain/value-objects/nickname';
 import { ListUserDtoBody } from './dto/list-users.response';
 import { RegisterUserBodyDto } from './dto/register-user.body';
 import { RegisterUserResponseBodyDto } from './dto/register-user.response';
+import { HttpAuthGuard } from './http-auth.guard';
 import { UserPresenter } from './presenters/user.presenter';
 
 @ApiTags('users')
@@ -58,8 +62,11 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(HttpAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'List all registered users' })
   @ApiOkResponse({ type: ListUserDtoBody, isArray: true })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid auth token' })
   async list(): Promise<ListUserDto[]> {
     const users = await this.listUsers.execute();
     return UserPresenter.toListUsers(users);

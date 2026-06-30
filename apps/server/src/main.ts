@@ -16,6 +16,7 @@ async function bootstrap() {
       .setTitle('Chat API')
       .setDescription('HTTP API for the realtime chat application')
       .setVersion('1.0')
+      .addBearerAuth()
       .build(),
   );
   SwaggerModule.setup('api', app, cleanupOpenApiDoc(openApiDoc));
