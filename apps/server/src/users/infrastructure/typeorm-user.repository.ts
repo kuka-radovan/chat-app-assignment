@@ -36,6 +36,14 @@ export class TypeOrmUserRepository extends UserRepository {
 
     return entity ? UserMapper.toDomain(entity) : null;
   }
+
+  async findAll(): Promise<User[]> {
+    const entities = await this.users.find({
+      order: { createdAt: 'ASC' },
+    });
+
+    return entities.map((entity) => UserMapper.toDomain(entity));
+  }
 }
 
 function isNicknameUniqueViolation(error: unknown): boolean {

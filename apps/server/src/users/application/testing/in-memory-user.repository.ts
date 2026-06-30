@@ -18,4 +18,11 @@ export class InMemoryUserRepository extends UserRepository {
   findByNickname(nickname: Nickname): Promise<User | null> {
     return Promise.resolve(this.byNickname.get(nickname.value) ?? null);
   }
+
+  findAll(): Promise<User[]> {
+    const users = [...this.byNickname.values()].sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+    return Promise.resolve(users);
+  }
 }

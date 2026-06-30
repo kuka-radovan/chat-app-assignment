@@ -7,3 +7,8 @@ export interface RegisterUserResponseDto {
   nickname: string;
   token: string;
 }
+
+export interface ListUserDto {
+  userId: string;
+  nickname: string;
+}
