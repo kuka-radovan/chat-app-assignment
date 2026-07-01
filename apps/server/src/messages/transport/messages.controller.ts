@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -10,6 +10,7 @@ import type { MessageDto } from '@chat/shared';
 import { HttpAuthGuard } from '../../users/transport/http-auth.guard';
 import { ListMessagesUseCase } from '../application/list-messages.use-case';
 import { MessageDtoBody } from './dto/message.response';
+import { HistoryQueryDto } from './dto/history.query';
 import { MessagePresenter } from './presenters/message.presenter';
 
 @ApiTags('messages')
@@ -20,11 +21,28 @@ export class MessagesController {
   @Get()
   @UseGuards(HttpAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'List all messages' })
+  @ApiOperation({ summary: 'List message history' })
   @ApiOkResponse({ type: MessageDtoBody, isArray: true })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid auth token' })
-  async list(): Promise<MessageDto[]> {
-    const messages = await this.listMessages.execute();
+  async list(@Query() query: HistoryQueryDto): Promise<MessageDto[]> {
+    const messages = await this.listMessages.execute({
+      limit: query.limit,
+      before:
+        query.beforeCreatedAt && query.beforeId
+          ? {
+              createdAt: new Date(query.beforeCreatedAt),
+              id: query.beforeId,
+            }
+          : undefined,
+      after:
+        query.afterCreatedAt && query.afterId
+          ? {
+              createdAt: new Date(query.afterCreatedAt),
+              id: query.afterId,
+            }
+          : undefined,
+    });
+
     return MessagePresenter.toList(messages);
   }
 }

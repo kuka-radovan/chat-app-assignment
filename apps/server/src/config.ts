@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const NICKNAME_MAX_LENGTH = 32;
 export const MESSAGE_MAX_LENGTH = 4000;
+export const DEFAULT_HISTORY_PAGE_SIZE = 50;
 
 const envSchema = z
   .object({
@@ -17,6 +18,7 @@ const envSchema = z
     ...env,
     NICKNAME_MAX_LENGTH,
     MESSAGE_MAX_LENGTH,
+    DEFAULT_HISTORY_PAGE_SIZE,
     DATABASE_URL: buildDatabaseUrl(env),
   }));
 
@@ -38,4 +40,6 @@ function buildDatabaseUrl(env: {
   return `postgresql://${encodeURIComponent(DATABASE_USER)}:${encodeURIComponent(DATABASE_PASSWORD)}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`;
 }
 
-export const config = envSchema.parse(process.env);
+export type AppConfig = z.output<typeof envSchema>;
+
+export const config: AppConfig = envSchema.parse(process.env);
