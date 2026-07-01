@@ -15,7 +15,8 @@ describe('SendMessageUseCase', () => {
     });
 
     expect(message.content.value).toBe('hello');
-    expect(message.authorId).toBe(authorId);
+    expect(message.author.id).toBe(authorId);
+    expect(message.author.nickname).toBeNull();
     expect(repository.savedMessages()).toEqual([message]);
   });
 

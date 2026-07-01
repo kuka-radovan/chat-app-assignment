@@ -4,3 +4,4 @@ export type {
   RegisterUserDto,
   RegisterUserResponseDto,
 } from './dto/user.dto';
+export type { MessageDto } from './dto/message.dto';

@@ -1,15 +1,17 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { config } from '../../config';
+import { UserOrmEntity } from '../../users/infrastructure/user.orm-entity';
 
 @Entity('messages')
 export class MessageOrmEntity {
   @PrimaryColumn('uuid')
   id!: string;
 
-  @Column({ name: 'author_id', type: 'uuid' })
-  authorId!: string;
+  @ManyToOne(() => UserOrmEntity, { nullable: false })
+  @JoinColumn({ name: 'author_id' })
+  author!: UserOrmEntity;
 
-  @Column({ type: 'text', length: config.MESSAGE_MAX_LENGTH })
+  @Column({ type: 'varchar', length: config.MESSAGE_MAX_LENGTH })
   content!: string;
 
   @Column({ name: 'created_at', type: 'timestamptz' })

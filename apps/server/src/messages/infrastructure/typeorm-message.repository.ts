@@ -21,7 +21,8 @@ export class TypeOrmMessageRepository extends MessageRepository {
 
   async findAll(): Promise<Message[]> {
     const entities = await this.messages.find({
-      order: { createdAt: 'ASC' },
+      relations: { author: true },
+      order: { createdAt: 'ASC', id: 'ASC' },
     });
 
     return entities.map((entity) => MessageMapper.toDomain(entity));

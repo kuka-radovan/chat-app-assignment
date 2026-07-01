@@ -37,5 +37,6 @@ import { UsersController } from './transport/users.controller';
     },
     HttpAuthGuard,
   ],
+  exports: [HttpAuthGuard, ResolveUserByTokenUseCase],
 })
 export class UsersModule {}
