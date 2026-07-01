@@ -1,4 +1,4 @@
-import { config } from '../../../config';
+import { NICKNAME_MAX_LENGTH } from '../../../config';
 import { InvalidNicknameError, Nickname } from './nickname';
 
 describe('Nickname', () => {
@@ -14,7 +14,7 @@ describe('Nickname', () => {
   });
 
   it('rejects nicknames that are too long', () => {
-    const tooLong = 'a'.repeat(config.NICKNAME_MAX_LENGTH + 1);
+    const tooLong = 'a'.repeat(NICKNAME_MAX_LENGTH + 1);
     expect(() => Nickname.from(tooLong)).toThrow(InvalidNicknameError);
   });
 

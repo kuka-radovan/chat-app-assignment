@@ -1,7 +1,5 @@
 import { randomUUID } from 'crypto';
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+import { isUuid } from '../../../common/uuid';
 
 export class AuthToken {
   private constructor(readonly value: string) {}
@@ -11,7 +9,7 @@ export class AuthToken {
   }
 
   static from(value: string): AuthToken {
-    if (!UUID_PATTERN.test(value)) {
+    if (!isUuid(value)) {
       throw new InvalidAuthTokenError();
     }
 

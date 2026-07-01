@@ -1,51 +1,41 @@
 import { z } from 'zod';
 
-const NICKNAME_MAX_LENGTH = 32;
+export const NICKNAME_MAX_LENGTH = 32;
+export const MESSAGE_MAX_LENGTH = 4000;
 
-export const configSchema = z.object({
-  SERVER_PORT: z.coerce.number().default(3000),
-  DATABASE_HOST: z.string().default('localhost'),
-  DATABASE_PORT: z.coerce.number().default(5432),
-  DATABASE_NAME: z.string(),
-  DATABASE_USER: z.string(),
-  DATABASE_PASSWORD: z.string(),
-  CORS_ORIGIN: z.string().default('http://localhost:9000'),
-});
+const envSchema = z
+  .object({
+    SERVER_PORT: z.coerce.number().default(3000),
+    DATABASE_HOST: z.string().default('localhost'),
+    DATABASE_PORT: z.coerce.number().default(5432),
+    DATABASE_NAME: z.string(),
+    DATABASE_USER: z.string(),
+    DATABASE_PASSWORD: z.string(),
+    CORS_ORIGIN: z.string().default('http://localhost:9000'),
+  })
+  .transform((env) => ({
+    ...env,
+    NICKNAME_MAX_LENGTH,
+    MESSAGE_MAX_LENGTH,
+    DATABASE_URL: buildDatabaseUrl(env),
+  }));
 
-function pickConfig<T extends z.ZodRawShape>(
-  schema: z.ZodObject<T>,
-  source: Record<string, unknown>,
-): z.infer<z.ZodObject<T>> {
-  const picked = Object.fromEntries(
-    (Object.keys(schema.shape) as (keyof T & string)[]).map((key) => [
-      key,
-      source[key],
-    ]),
-  );
-  return schema.parse(picked);
-}
-
-function buildDatabaseConnectionString(parts: {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
+function buildDatabaseUrl(env: {
+  DATABASE_HOST: string;
+  DATABASE_PORT: number;
+  DATABASE_NAME: string;
+  DATABASE_USER: string;
+  DATABASE_PASSWORD: string;
 }): string {
-  const { host, port, database, user, password } = parts;
-  return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}`;
+  const {
+    DATABASE_HOST,
+    DATABASE_PORT,
+    DATABASE_NAME,
+    DATABASE_USER,
+    DATABASE_PASSWORD,
+  } = env;
+
+  return `postgresql://${encodeURIComponent(DATABASE_USER)}:${encodeURIComponent(DATABASE_PASSWORD)}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`;
 }
 
-const picked = pickConfig(configSchema, process.env);
-
-export const config = {
-  ...picked,
-  NICKNAME_MAX_LENGTH,
-  DATABASE_URL: buildDatabaseConnectionString({
-    host: picked.DATABASE_HOST,
-    port: picked.DATABASE_PORT,
-    database: picked.DATABASE_NAME,
-    user: picked.DATABASE_USER,
-    password: picked.DATABASE_PASSWORD,
-  }),
-};
+export const config = envSchema.parse(process.env);
