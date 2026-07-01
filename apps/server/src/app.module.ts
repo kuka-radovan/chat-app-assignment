@@ -3,7 +3,9 @@ import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { getNestTypeOrmOptions } from './database/typeorm.options';
+import { ChatModule } from './chat/chat.module';
 import { HealthModule } from './health/health.module';
+import { MessagesModule } from './messages/messages.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -11,6 +13,8 @@ import { UsersModule } from './users/users.module';
     TypeOrmModule.forRoot(getNestTypeOrmOptions()),
     HealthModule,
     UsersModule,
+    MessagesModule,
+    ChatModule,
   ],
   providers: [
     {
