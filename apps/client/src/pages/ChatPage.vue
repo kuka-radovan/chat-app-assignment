@@ -24,8 +24,10 @@ import ChatPanel from '@/components/ChatPanel.vue';
 import NicknameDialog from '@/components/NicknameDialog.vue';
 import PresencePanel from '@/components/PresencePanel.vue';
 import { useAuth } from '@/composables/useAuth';
+import { useSocket } from '@/composables/useSocket';
 
 const { isAuthenticated, isInitializing, loading, error, register } = useAuth();
+useSocket();
 </script>
 
 <style scoped lang="scss">

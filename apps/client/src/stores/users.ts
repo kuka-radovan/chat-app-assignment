@@ -39,5 +39,5 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null;
   }
 
-  return { users, error, participants, loadParticipants, reset };
+  return { users, error, participants, loadParticipants, upsertUser, reset };
 });

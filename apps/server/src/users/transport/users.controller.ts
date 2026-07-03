@@ -21,6 +21,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { ListUserDto, RegisterUserResponseDto } from '@chat/shared';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { USER_REGISTERED_EVENT } from '../../common/events/user-registered.event';
 import { ListUsersUseCase } from '../application/list-users.use-case';
 import { RegisterUserUseCase } from '../application/register-user.use-case';
 import { NicknameAlreadyTakenError } from '../domain/errors';
@@ -39,6 +41,7 @@ export class UsersController {
   constructor(
     private readonly registerUser: RegisterUserUseCase,
     private readonly listUsers: ListUsersUseCase,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   @Post()
@@ -52,6 +55,12 @@ export class UsersController {
   ): Promise<RegisterUserResponseDto> {
     try {
       const user = await this.registerUser.execute(registerUserDto.nickname);
+
+      this.eventEmitter.emit(USER_REGISTERED_EVENT, {
+        userId: user.id.value,
+        nickname: user.nickname.value,
+      });
+
       return UserPresenter.toRegisterResponse(user);
     } catch (error) {
       if (error instanceof InvalidNicknameError) {

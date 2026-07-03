@@ -1,4 +1,8 @@
-export type { Ack } from './events';
+export type {
+  Ack,
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from './events';
 export type { HistoryQuery } from './http';
 export type {
   ListUserDto,
