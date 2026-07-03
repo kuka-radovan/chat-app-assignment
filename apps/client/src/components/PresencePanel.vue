@@ -7,7 +7,7 @@
     <q-separator />
 
     <q-scroll-area class="col">
-      <UsersList :users="sidebarUsers" :error="error" />
+      <UsersList :users="participants" :error="error" />
     </q-scroll-area>
   </aside>
 </template>
@@ -20,10 +20,10 @@ import { useUsersStore } from '@/stores/users';
 
 const usersStore = useUsersStore();
 
-const { sidebarUsers, error } = storeToRefs(usersStore);
+const { participants, error } = storeToRefs(usersStore);
 
 onMounted(() => {
-  void usersStore.loadRoster();
+  void usersStore.loadParticipants();
 });
 </script>
 

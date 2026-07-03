@@ -8,14 +8,14 @@ export const useUsersStore = defineStore('users', () => {
   const users = ref<ListUserDto[]>([]);
   const error = ref<string | null>(null);
 
-  const sidebarUsers = computed<ListUserDto[]>(() => {
+  const participants = computed<ListUserDto[]>(() => {
     const currentUserId = useIdentityStore().userId;
     return users.value
       .filter((user) => user.userId !== currentUserId)
       .sort((a, b) => a.nickname.localeCompare(b.nickname));
   });
 
-  async function loadRoster(): Promise<void> {
+  async function loadParticipants(): Promise<void> {
     error.value = null;
 
     try {
@@ -25,10 +25,19 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
+  function upsertUser(user: ListUserDto): void {
+    const index = users.value.findIndex((u) => u.userId === user.userId);
+    if (index >= 0) {
+      users.value[index] = user;
+    } else {
+      users.value.push(user);
+    }
+  }
+
   function reset(): void {
     users.value = [];
     error.value = null;
   }
 
-  return { users, error, sidebarUsers, loadRoster, reset };
+  return { users, error, participants, loadParticipants, reset };
 });
