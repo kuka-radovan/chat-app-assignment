@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { computed, ref } from 'vue';
 import { fetchMe, registerUser } from '@/api/users';
-import { useUserStore } from '@/stores/user';
+import { useIdentityStore } from '@/stores/identity';
 import { clearToken, getToken, setToken } from '@/utils/token-storage';
 
 const authenticated = ref(false);
@@ -36,14 +36,14 @@ export function useAuth() {
 
     try {
       const user = await fetchMe();
-      useUserStore().setUser({ userId: user.userId, nickname: user.nickname });
+      useIdentityStore().setUser({ userId: user.userId, nickname: user.nickname });
 
       authenticated.value = true;
     } catch (err) {
       // A stale/invalid token resolves to 401 -> drop it and fall back to registration.
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         clearToken();
-        useUserStore().clear();
+        useIdentityStore().clear();
       }
       authenticated.value = false;
     } finally {
@@ -58,7 +58,7 @@ export function useAuth() {
       const user = await registerUser(nickname);
 
       setToken(user.token);
-      useUserStore().setUser({ userId: user.userId, nickname: user.nickname });
+      useIdentityStore().setUser({ userId: user.userId, nickname: user.nickname });
 
       authenticated.value = true;
     } catch (err) {

@@ -108,6 +108,7 @@ export default defineConfig((/* ctx */) => {
       // (config.apiBaseUrl === '') in both dev and prod.
       proxy: {
         '/users': { target: serverTarget, changeOrigin: true },
+        '/messages': { target: serverTarget, changeOrigin: true },
         '/socket.io': { target: serverTarget, changeOrigin: true, ws: true },
       },
     },

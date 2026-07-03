@@ -14,3 +14,8 @@ export async function fetchMe(): Promise<ListUserDto> {
   const { data } = await api.get<ListUserDto>('/users/me');
   return data;
 }
+
+export async function fetchUsers(): Promise<ListUserDto[]> {
+  const { data } = await api.get<ListUserDto[]>('/users');
+  return data;
+}

@@ -7,10 +7,25 @@
     <q-separator />
 
     <q-scroll-area class="col">
-      <q-list padding />
+      <UsersList :users="sidebarUsers" :error="error" />
     </q-scroll-area>
   </aside>
 </template>
+
+<script setup lang="ts">
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+import UsersList from '@/components/UsersList.vue';
+import { useUsersStore } from '@/stores/users';
+
+const usersStore = useUsersStore();
+
+const { sidebarUsers, error } = storeToRefs(usersStore);
+
+onMounted(() => {
+  void usersStore.loadRoster();
+});
+</script>
 
 <style scoped lang="scss">
 .presence-panel {

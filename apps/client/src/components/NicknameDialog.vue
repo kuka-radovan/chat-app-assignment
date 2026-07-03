@@ -82,8 +82,8 @@ function onSubmit(): void {
 }
 
 :deep(.q-dialog__backdrop) {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: rgba(255, 255, 255, 0.12);
 }
 </style>
