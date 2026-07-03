@@ -17,6 +17,8 @@
   "dependencies": {
     "@chat/shared": "workspace:*",
     "@quasar/extras": "^2.0.0",
+    "axios": "^1.18.1",
+    "pinia": "^3.0.4",
     "quasar": "^2.20.0",
     "vue": "^3.5.22",
     "vue-router": "^5.0.6"

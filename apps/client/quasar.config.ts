@@ -4,6 +4,11 @@
 import { defineConfig } from '#q-app';
 
 export default defineConfig((/* ctx */) => {
+  // In Docker Compose the backend is reachable via the "server" service name;
+  // on the host (pnpm dev) it's localhost.
+  const serverHost = process.env.DOCKER === 'true' ? 'server' : 'localhost';
+  const serverTarget = `http://${serverHost}:${process.env.SERVER_PORT ?? 3000}`;
+
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -11,7 +16,7 @@ export default defineConfig((/* ctx */) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: [],
+    boot: ['axios'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -98,6 +103,13 @@ export default defineConfig((/* ctx */) => {
       host: '0.0.0.0',
       port: Number(process.env.CLIENT_PORT ?? 9000),
       open: process.env.DOCKER !== 'true',
+      // Mirror the production nginx routing (see nginx.conf.template): forward the
+      // API + WebSocket paths to the backend so the client can stay origin-relative
+      // (config.apiBaseUrl === '') in both dev and prod.
+      proxy: {
+        '/users': { target: serverTarget, changeOrigin: true },
+        '/socket.io': { target: serverTarget, changeOrigin: true, ws: true },
+      },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
