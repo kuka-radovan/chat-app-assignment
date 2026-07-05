@@ -1,11 +1,17 @@
 import { dataSource } from './data-source';
 
 async function schemaAlreadyPresent(): Promise<boolean> {
-  const [result] = await dataSource.query<{ users: string | null }[]>(
-    `SELECT to_regclass('public.users') AS users`,
+  const [result] = await dataSource.query<
+    {
+      users: string | null;
+      messages: string | null;
+    }[]
+  >(
+    `SELECT to_regclass('public.users') AS users,
+            to_regclass('public.messages') AS messages`,
   );
 
-  return result?.users !== null;
+  return result?.users !== null && result?.messages !== null;
 }
 
 async function runMigrations(): Promise<void> {

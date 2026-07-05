@@ -5,7 +5,7 @@ export class CreateUsers1780700000000 implements MigrationInterface {
 
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
         id           UUID PRIMARY KEY,
         nickname     VARCHAR(32) UNIQUE NOT NULL,
         token        UUID UNIQUE NOT NULL,
@@ -13,7 +13,7 @@ export class CreateUsers1780700000000 implements MigrationInterface {
       )
     `);
     await queryRunner.query(`
-      CREATE INDEX idx_users_token ON users (token)
+      CREATE INDEX IF NOT EXISTS idx_users_token ON users (token)
     `);
   }
 
