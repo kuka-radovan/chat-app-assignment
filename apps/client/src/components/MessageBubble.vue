@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="message-row row items-start no-wrap q-gutter-sm"
-    :class="{ 'own-message reverse': own }"
-  >
+  <div class="message-row row items-end no-wrap q-gutter-sm" :class="{ reverse: own }">
     <q-avatar
       size="36px"
       text-color="white"
@@ -10,13 +7,16 @@
     >
       {{ avatarInitial(message.nickname) }}
     </q-avatar>
-    <div class="message-bubble column">
-      <div class="row items-baseline q-gutter-xs">
-        <span class="text-caption text-weight-medium">{{ message.nickname }}</span>
-        <span class="text-caption text-grey-6">{{ time }}</span>
-      </div>
-      <div class="message-content text-body2">{{ message.content }}</div>
-    </div>
+
+    <q-chat-message
+      class="message-bubble col"
+      :name="message.nickname"
+      :text="[message.content]"
+      :sent="own"
+      :stamp="time"
+      :bg-color="own ? 'primary' : 'white'"
+      :text-color="own ? 'white' : 'dark'"
+    />
   </div>
 </template>
 
@@ -50,27 +50,17 @@ const time = computed(() =>
 
 .message-bubble {
   min-width: 0;
-  max-width: 75%;
-}
 
-.message-content {
-  background: white;
-  border: 1px solid $grey-4;
-  border-radius: 12px;
-  padding: 8px 12px;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-
-.own-message {
-  .message-bubble {
-    align-items: flex-end;
+  // QChatMessage assumes it owns the avatar column and adds its own outer
+  // margin + bottom spacing; the row gutter and MessageList spacing handle
+  // that here, so neutralize them.
+  :deep(.q-message-container) {
+    margin: 0;
   }
 
-  .message-content {
-    background: $primary;
-    color: white;
-    border-color: $primary;
+  :deep(.q-message-text-content) {
+    word-break: break-word;
+    white-space: pre-wrap;
   }
 }
 </style>

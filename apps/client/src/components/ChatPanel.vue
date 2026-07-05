@@ -5,7 +5,14 @@
       <div class="q-mt-sm text-body2">{{ error }}</div>
     </div>
 
-    <MessageList v-else class="col" :messages="messages" :current-user-id="userId" />
+    <MessageList
+      v-else
+      class="col"
+      :messages="messages"
+      :current-user-id="userId"
+      :has-more="hasMore"
+      :load-older="messagesStore.loadOlderMessages"
+    />
 
     <MessageInput
       ref="messageInputRef"
@@ -29,7 +36,7 @@ import { useMessagesStore } from '@/stores/messages';
 const messagesStore = useMessagesStore();
 const identityStore = useIdentityStore();
 
-const { messages, error } = storeToRefs(messagesStore);
+const { messages, error, hasMore } = storeToRefs(messagesStore);
 const { userId } = storeToRefs(identityStore);
 
 const { message, sending, error: sendError, send } = useMessageSender();
