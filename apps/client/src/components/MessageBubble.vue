@@ -8,7 +8,7 @@
       text-color="white"
       :style="{ backgroundColor: avatarColor(message.authorId) }"
     >
-      {{ message.nickname.charAt(0) || '?' }}
+      {{ avatarInitial(message.nickname) }}
     </q-avatar>
     <div class="message-bubble column">
       <div class="row items-baseline q-gutter-xs">
@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import type { MessageDto } from '@chat/shared';
 import { computed } from 'vue';
-import { avatarColor } from '@/utils/avatar-color';
+import { avatarColor, avatarInitial } from '@/utils/avatar';
 
 const props = withDefaults(
   defineProps<{

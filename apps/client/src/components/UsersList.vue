@@ -15,7 +15,7 @@
           text-color="white"
           :style="{ backgroundColor: avatarColor(user.userId) }"
         >
-          {{ initial(user.nickname) }}
+          {{ avatarInitial(user.nickname) }}
         </q-avatar>
       </q-item-section>
       <q-item-section>
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import type { ListUserDto } from '@chat/shared';
-import { avatarColor } from '@/utils/avatar-color';
+import { avatarColor, avatarInitial } from '@/utils/avatar';
 
 withDefaults(
   defineProps<{
@@ -38,8 +38,4 @@ withDefaults(
     error: null,
   },
 );
-
-function initial(nickname: string): string {
-  return nickname.trim().charAt(0).toUpperCase() || '?';
-}
 </script>

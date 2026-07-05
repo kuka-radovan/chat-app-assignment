@@ -17,3 +17,7 @@ export function avatarColor(seed: string): string {
   }
   return color;
 }
+
+export function avatarInitial(nickname: string): string {
+  return nickname.trim().charAt(0).toUpperCase() || '?';
+}

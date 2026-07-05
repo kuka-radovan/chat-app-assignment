@@ -1,5 +1,6 @@
 import { defineBoot } from '#q-app';
 import type { Ack, ClientToServerEvents, MessageDto, ServerToClientEvents } from '@chat/shared';
+import { Notify } from 'quasar';
 import { io, type Socket } from 'socket.io-client';
 import { config } from '@/config';
 import { useMessagesStore } from '@/stores/messages';
@@ -11,6 +12,15 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(config.api
   autoConnect: false,
 });
 
+function notifyPresence(nickname: string, action: 'joined' | 'left'): void {
+  Notify.create({
+    message: nickname,
+    caption: `${action} the conversation`,
+    position: 'top-right',
+    timeout: 3000,
+  });
+}
+
 socket.on('connect', () => {
   void announceOnline();
 });
@@ -21,10 +31,15 @@ socket.on('disconnect', () => {
 
 socket.on('user:online', (user) => {
   useUsersStore().upsertUser(user);
+  notifyPresence(user.nickname, 'joined');
 });
 
 socket.on('user:offline', (userId) => {
-  useUsersStore().removeUser(userId);
+  const removed = useUsersStore().removeUser(userId);
+
+  if (removed) {
+    notifyPresence(removed.nickname, 'left');
+  }
 });
 
 socket.on('message:new', (message) => {
