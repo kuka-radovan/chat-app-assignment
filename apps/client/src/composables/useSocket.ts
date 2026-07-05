@@ -19,7 +19,7 @@ export function useSocket(): void {
     (authenticated) => {
       if (authenticated) {
         const token = getToken();
-        
+
         if (token) {
           connectSocket(token);
         }

@@ -1,9 +1,7 @@
 import type { ListUserDto, RegisterUserResponseDto } from '@chat/shared';
 import { api } from '@/boot/axios';
 
-export async function registerUser(
-  nickname: string,
-): Promise<RegisterUserResponseDto> {
+export async function registerUser(nickname: string): Promise<RegisterUserResponseDto> {
   const { data } = await api.post<RegisterUserResponseDto>('/users', {
     nickname,
   });

@@ -1,3 +1,5 @@
+import type { MessageDto } from './dto/message.dto';
+import type { SendMessageDto } from './dto/send-message.dto';
 import type { ListUserDto } from './dto/user.dto';
 
 export type Ack<T> =
@@ -6,7 +8,13 @@ export type Ack<T> =
 
 export interface ServerToClientEvents {
   'user:registered': (user: ListUserDto) => void;
+  'message:new': (message: MessageDto) => void;
 }
 
-export type ClientToServerEvents = Record<string, never>;
+export interface ClientToServerEvents {
+  'message:send': (
+    dto: SendMessageDto,
+    ack: (response: Ack<MessageDto>) => void,
+  ) => void;
+}
 

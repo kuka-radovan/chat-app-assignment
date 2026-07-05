@@ -10,3 +10,4 @@ export type {
   RegisterUserResponseDto,
 } from './dto/user.dto';
 export type { MessageDto } from './dto/message.dto';
+export type { SendMessageDto } from './dto/send-message.dto';

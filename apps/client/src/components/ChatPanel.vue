@@ -5,14 +5,9 @@
       <div class="q-mt-sm text-body2">{{ error }}</div>
     </div>
 
-    <MessageList
-      v-else
-      class="col"
-      :messages="messages"
-      :current-user-id="userId"
-    />
+    <MessageList v-else class="col" :messages="messages" :current-user-id="userId" />
 
-    <MessageInput />
+    <MessageInput v-model="message" :sending="sending" :error="sendError" @send="send" />
   </section>
 </template>
 
@@ -21,6 +16,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted } from 'vue';
 import MessageInput from '@/components/MessageInput.vue';
 import MessageList from '@/components/MessageList.vue';
+import { useMessageSender } from '@/composables/useMessageSender';
 import { useIdentityStore } from '@/stores/identity';
 import { useMessagesStore } from '@/stores/messages';
 
@@ -29,6 +25,8 @@ const identityStore = useIdentityStore();
 
 const { messages, error } = storeToRefs(messagesStore);
 const { userId } = storeToRefs(identityStore);
+
+const { message, sending, error: sendError, send } = useMessageSender();
 
 onMounted(() => {
   void messagesStore.loadInitialMessages();
