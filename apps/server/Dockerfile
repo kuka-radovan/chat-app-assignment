@@ -30,9 +30,12 @@ COPY packages/shared/package.json packages/shared/
 RUN pnpm install --frozen-lockfile --prod --filter @chat/server...
 
 COPY --from=builder /app/apps/server/dist ./apps/server/dist
+COPY apps/server/docker-entrypoint.sh ./apps/server/docker-entrypoint.sh
 
 WORKDIR /app/apps/server
 
+RUN chmod +x docker-entrypoint.sh
+
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["./docker-entrypoint.sh"]

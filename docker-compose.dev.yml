@@ -14,7 +14,6 @@ services:
       - "${DATABASE_PORT}:5432"
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
-      - ./apps/server/src/database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
@@ -41,6 +40,7 @@ services:
     command: >
       sh -ec "pnpm install --frozen-lockfile --ignore-scripts &&
       pnpm --filter @chat/client exec quasar prepare --silent &&
+      pnpm --filter @chat/server migration:run &&
       pnpm --filter @chat/server dev"
 
   client:

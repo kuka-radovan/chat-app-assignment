@@ -98,7 +98,7 @@ cp .env.example .env
 | `DATABASE_PASSWORD` | *(see `.env.example`)* | Database password |
 | `CORS_ORIGIN` | `http://localhost:9000` | Must match the client origin (`http://localhost:<CLIENT_PORT>`) |
 
-The database schema is applied automatically when Postgres starts for the first time (`apps/server/src/database/init.sql`).
+The database schema is managed by TypeORM migrations in `apps/server/src/database/migrations/`. Run `pnpm migration:run` before starting the server locally; Docker runs migrations automatically before the app starts.
 
 ---
 
@@ -138,6 +138,7 @@ cp .env.example .env
 
 pnpm install
 docker compose -f docker-compose.dev.yml up postgres -d
+pnpm migration:run
 pnpm dev
 ```
 
