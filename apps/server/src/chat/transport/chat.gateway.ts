@@ -1,8 +1,8 @@
 import {
   ConnectedSocket,
   MessageBody,
-  OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -71,7 +71,7 @@ interface OnlineUser {
 }
 
 @WebSocketGateway({ cors: { origin: config.CORS_ORIGIN } })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayInit, OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server<ClientToServerEvents, ServerToClientEvents>;
 
@@ -82,28 +82,38 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly sendMessage: SendMessageUseCase,
   ) {}
 
-  async handleConnection(client: AuthenticatedSocket): Promise<void> {
+  afterInit(server: Server): void {
+    server.use((socket, next) => {
+      void this.authenticateSocket(socket as AuthenticatedSocket, next);
+    });
+  }
+
+  private async authenticateSocket(
+    client: AuthenticatedSocket,
+    next: (err?: Error) => void,
+  ): Promise<void> {
     const token = readAuthToken(client.handshake.auth);
     if (token === null) {
-      client.disconnect();
+      next(new Error('Unauthorized'));
       return;
     }
 
     try {
       const user = await this.resolveUser.execute(token);
       if (!user) {
-        client.disconnect();
+        next(new Error('Unauthorized'));
         return;
       }
 
       client.data.user = user;
+      next();
     } catch (error) {
       if (error instanceof InvalidAuthTokenError) {
-        client.disconnect();
+        next(new Error('Unauthorized'));
         return;
       }
 
-      throw error;
+      next(error as Error);
     }
   }
 
