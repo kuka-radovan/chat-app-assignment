@@ -1,8 +1,9 @@
+import { FakeIdGenerator } from '../../../common/id/testing/fake-id-generator';
 import { MessageId } from './message-id';
 
 describe('MessageId', () => {
   it('generates a valid UUID', () => {
-    const id = MessageId.generate();
+    const id = MessageId.generate(new FakeIdGenerator());
     expect(MessageId.from(id.value)).toEqual(id);
   });
 

@@ -1,3 +1,5 @@
+import { FixedClock } from '../../common/clock/testing/fixed-clock';
+import { FakeIdGenerator } from '../../common/id/testing/fake-id-generator';
 import { AuthToken } from './value-objects/auth-token';
 import { Nickname } from './value-objects/nickname';
 import { UserId } from './value-objects/user-id';
@@ -6,15 +8,19 @@ import { User } from './user';
 describe('User', () => {
   it('creates a user with generated id, token, and timestamp', () => {
     const nickname = Nickname.from('alice');
-    const before = Date.now();
+    const createdAt = new Date('2026-06-20T12:00:00.000Z');
 
-    const user = User.create(nickname);
+    const user = User.create(
+      nickname,
+      new FixedClock(createdAt),
+      new FakeIdGenerator(),
+    );
 
     expect(user.nickname).toBe(nickname);
     expect(user.id).toBeInstanceOf(UserId);
     expect(user.token).toBeInstanceOf(AuthToken);
-    expect(user.createdAt).toBeInstanceOf(Date);
-    expect(user.createdAt.getTime()).toBeGreaterThanOrEqual(before);
+    expect(user.id.value).not.toBe(user.token.value);
+    expect(user.createdAt).toBe(createdAt);
   });
 
   it('reconstitutes a user from persisted values', () => {

@@ -1,8 +1,9 @@
+import { FakeIdGenerator } from '../../../common/id/testing/fake-id-generator';
 import { UserId } from './user-id';
 
 describe('UserId', () => {
   it('generates a valid UUID', () => {
-    const id = UserId.generate();
+    const id = UserId.generate(new FakeIdGenerator());
     expect(UserId.from(id.value)).toEqual(id);
   });
 

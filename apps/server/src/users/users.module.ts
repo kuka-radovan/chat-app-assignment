@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Clock } from '../common/clock/clock.port';
+import { IdGenerator } from '../common/id/id-generator.port';
 import { RegisterUserUseCase } from './application/register-user.use-case';
 import { ResolveUserByTokenUseCase } from './application/resolve-user-by-token.use-case';
 import { UserRepository } from './domain/user.repository';
@@ -18,9 +20,12 @@ import { UsersController } from './transport/users.controller';
     },
     {
       provide: RegisterUserUseCase,
-      useFactory: (userRepository: UserRepository) =>
-        new RegisterUserUseCase(userRepository),
-      inject: [UserRepository],
+      useFactory: (
+        userRepository: UserRepository,
+        clock: Clock,
+        idGenerator: IdGenerator,
+      ) => new RegisterUserUseCase(userRepository, clock, idGenerator),
+      inject: [UserRepository, Clock, IdGenerator],
     },
     {
       provide: ResolveUserByTokenUseCase,

@@ -1,11 +1,11 @@
-import { randomUUID } from 'crypto';
+import { IdGenerator } from '../../../common/id/id-generator.port';
 import { isUuid } from '../../../common/uuid';
 
 export class AuthToken {
   private constructor(readonly value: string) {}
 
-  static generate(): AuthToken {
-    return new AuthToken(randomUUID());
+  static generate(idGenerator: IdGenerator): AuthToken {
+    return new AuthToken(idGenerator.generate());
   }
 
   static from(value: string): AuthToken {

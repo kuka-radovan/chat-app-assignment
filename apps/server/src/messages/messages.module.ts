@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Clock } from '../common/clock/clock.port';
+import { IdGenerator } from '../common/id/id-generator.port';
 import { DEFAULT_HISTORY_PAGE_SIZE } from '../config';
 import { UsersModule } from '../users/users.module';
 import { ListMessagesUseCase } from './application/list-messages.use-case';
@@ -19,9 +21,12 @@ import { MessagesController } from './transport/messages.controller';
     },
     {
       provide: SendMessageUseCase,
-      useFactory: (messageRepository: MessageRepository) =>
-        new SendMessageUseCase(messageRepository),
-      inject: [MessageRepository],
+      useFactory: (
+        messageRepository: MessageRepository,
+        clock: Clock,
+        idGenerator: IdGenerator,
+      ) => new SendMessageUseCase(messageRepository, clock, idGenerator),
+      inject: [MessageRepository, Clock, IdGenerator],
     },
     {
       provide: ListMessagesUseCase,

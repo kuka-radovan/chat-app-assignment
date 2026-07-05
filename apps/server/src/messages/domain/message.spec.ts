@@ -1,3 +1,5 @@
+import { FixedClock } from '../../common/clock/testing/fixed-clock';
+import { FakeIdGenerator } from '../../common/id/testing/fake-id-generator';
 import { Nickname } from '../../users/domain/value-objects/nickname';
 import { UserId } from '../../users/domain/value-objects/user-id';
 import { Message } from './message';
@@ -8,16 +10,20 @@ import { MessageId } from './value-objects/message-id';
 describe('Message', () => {
   it('creates a message with generated id and timestamp', () => {
     const authorId = UserId.from('550e8400-e29b-41d4-a716-446655440000');
-    const before = Date.now();
+    const createdAt = new Date('2026-06-20T12:00:00.000Z');
 
-    const message = Message.create(authorId, MessageContent.from('hello'));
+    const message = Message.create(
+      authorId,
+      MessageContent.from('hello'),
+      new FixedClock(createdAt),
+      new FakeIdGenerator(),
+    );
 
     expect(message.author.id).toBe(authorId);
     expect(message.author.nickname).toBeNull();
     expect(message.content.value).toBe('hello');
     expect(message.id).toBeInstanceOf(MessageId);
-    expect(message.createdAt).toBeInstanceOf(Date);
-    expect(message.createdAt.getTime()).toBeGreaterThanOrEqual(before);
+    expect(message.createdAt).toBe(createdAt);
   });
 
   it('reconstitutes a message from persisted values', () => {

@@ -1,4 +1,6 @@
 import type { Server } from 'socket.io';
+import { SystemClock } from '../../common/clock/system-clock';
+import { FakeIdGenerator } from '../../common/id/testing/fake-id-generator';
 import { SendMessageUseCase } from '../../messages/application/send-message.use-case';
 import { InMemoryMessageRepository } from '../../messages/application/testing/in-memory-message.repository';
 import { SendMessageBodyDto } from '../../messages/transport/dto/send-message.body';
@@ -11,7 +13,11 @@ type MockServer = { emit: jest.Mock };
 
 function buildGateway(): { gateway: ChatGateway; server: MockServer } {
   const repository = new InMemoryMessageRepository();
-  const sendMessage = new SendMessageUseCase(repository);
+  const sendMessage = new SendMessageUseCase(
+    repository,
+    new SystemClock(),
+    new FakeIdGenerator(),
+  );
   const resolveUser = {} as ResolveUserByTokenUseCase;
 
   const gateway = new ChatGateway(resolveUser, sendMessage);
@@ -42,7 +48,11 @@ function messageBody(content: string): SendMessageBodyDto {
 }
 
 describe('ChatGateway', () => {
-  const author = User.create(Nickname.from('alice'));
+  const author = User.create(
+    Nickname.from('alice'),
+    new SystemClock(),
+    new FakeIdGenerator(),
+  );
 
   describe('messages', () => {
     it('persists, broadcasts and acks a valid message', async () => {

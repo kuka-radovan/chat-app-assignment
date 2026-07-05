@@ -29,7 +29,7 @@ export const useUsersStore = defineStore('users', () => {
 
   function removeUser(userId: string): ListUserDto | undefined {
     const removed = users.value.find((user) => user.userId === userId);
-    
+
     users.value = users.value.filter((user) => user.userId !== userId);
     return removed;
   }

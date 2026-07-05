@@ -1,3 +1,5 @@
+import type { Clock } from '../../common/clock/clock.port';
+import type { IdGenerator } from '../../common/id/id-generator.port';
 import { AuthToken } from './value-objects/auth-token';
 import { Nickname } from './value-objects/nickname';
 import { UserId } from './value-objects/user-id';
@@ -10,12 +12,16 @@ export class User {
     readonly createdAt: Date,
   ) {}
 
-  static create(nickname: Nickname): User {
+  static create(
+    nickname: Nickname,
+    clock: Clock,
+    idGenerator: IdGenerator,
+  ): User {
     return new User(
-      UserId.generate(),
+      UserId.generate(idGenerator),
       nickname,
-      AuthToken.generate(),
-      new Date(),
+      AuthToken.generate(idGenerator),
+      clock.now(),
     );
   }
 

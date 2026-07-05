@@ -1,3 +1,5 @@
+import type { Clock } from '../../common/clock/clock.port';
+import type { IdGenerator } from '../../common/id/id-generator.port';
 import type { UserId } from '../../users/domain/value-objects/user-id';
 import { MessageAuthor } from './value-objects/message-author';
 import type { MessageContent } from './value-objects/message-content';
@@ -11,12 +13,17 @@ export class Message {
     readonly createdAt: Date,
   ) {}
 
-  static create(authorId: UserId, content: MessageContent): Message {
+  static create(
+    authorId: UserId,
+    content: MessageContent,
+    clock: Clock,
+    idGenerator: IdGenerator,
+  ): Message {
     return new Message(
-      MessageId.generate(),
+      MessageId.generate(idGenerator),
       MessageAuthor.fromId(authorId),
       content,
-      new Date(),
+      clock.now(),
     );
   }
 
