@@ -1,8 +1,8 @@
-import { OnEvent } from '@nestjs/event-emitter';
 import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -15,7 +15,6 @@ import type {
   ServerToClientEvents,
 } from '@chat/shared';
 import type { Server, Socket } from 'socket.io';
-import { USER_REGISTERED_EVENT } from '../../common/events/user-registered.event';
 import { config } from '../../config';
 import { SendMessageUseCase } from '../../messages/application/send-message.use-case';
 import { SendMessageBodyDto } from '../../messages/transport/dto/send-message.body';
@@ -66,10 +65,17 @@ function toAckError(error: unknown): Ack<MessageDto> {
   throw error;
 }
 
+interface OnlineUser {
+  user: ListUserDto;
+  socketIds: Set<string>;
+}
+
 @WebSocketGateway({ cors: { origin: config.CORS_ORIGIN } })
-export class ChatGateway implements OnGatewayConnection {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server<ClientToServerEvents, ServerToClientEvents>;
+
+  private readonly onlineUsers = new Map<string, OnlineUser>();
 
   constructor(
     private readonly resolveUser: ResolveUserByTokenUseCase,
@@ -129,8 +135,53 @@ export class ChatGateway implements OnGatewayConnection {
     }
   }
 
-  @OnEvent(USER_REGISTERED_EVENT)
-  handleUserRegistered(user: ListUserDto): void {
-    this.server.emit('user:registered', user);
+  @SubscribeMessage('user:online')
+  handleUserOnline(
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ): Ack<ListUserDto[]> {
+    const user = client.data.user;
+    if (!user) {
+      return {
+        ok: false,
+        error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
+      };
+    }
+
+    const dto: ListUserDto = {
+      userId: user.id.value,
+      nickname: user.nickname.value,
+    };
+
+    const existing = this.onlineUsers.get(dto.userId);
+    if (existing) {
+      existing.socketIds.add(client.id);
+    } else {
+      this.onlineUsers.set(dto.userId, {
+        user: dto,
+        socketIds: new Set([client.id]),
+      });
+      client.broadcast.emit('user:online', dto);
+    }
+
+    const roster = [...this.onlineUsers.values()].map((entry) => entry.user);
+    return { ok: true, data: roster };
+  }
+
+  handleDisconnect(client: AuthenticatedSocket): void {
+    const user = client.data.user;
+    if (!user) {
+      return;
+    }
+
+    const entry = this.onlineUsers.get(user.id.value);
+    if (!entry) {
+      return;
+    }
+
+    entry.socketIds.delete(client.id);
+    if (entry.socketIds.size === 0) {
+      this.onlineUsers.delete(user.id.value);
+      this.server.emit('user:offline', user.id.value);
+    }
   }
 }

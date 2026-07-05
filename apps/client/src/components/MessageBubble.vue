@@ -3,7 +3,11 @@
     class="message-row row items-start no-wrap q-gutter-sm"
     :class="{ 'own-message reverse': own }"
   >
-    <q-avatar size="36px" color="primary" text-color="white">
+    <q-avatar
+      size="36px"
+      text-color="white"
+      :style="{ backgroundColor: avatarColor(message.authorId) }"
+    >
       {{ message.nickname.charAt(0) || '?' }}
     </q-avatar>
     <div class="message-bubble column">
@@ -19,6 +23,7 @@
 <script setup lang="ts">
 import type { MessageDto } from '@chat/shared';
 import { computed } from 'vue';
+import { avatarColor } from '@/utils/avatar-color';
 
 const props = withDefaults(
   defineProps<{

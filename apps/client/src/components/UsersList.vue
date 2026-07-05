@@ -4,13 +4,17 @@
   </div>
 
   <div v-else-if="users.length === 0" class="q-pa-md text-center text-grey-6 text-body2">
-    No other users yet.
+    No one is online right now
   </div>
 
   <q-list v-else padding>
     <q-item v-for="user in users" :key="user.userId">
       <q-item-section avatar>
-        <q-avatar size="32px" color="primary" text-color="white">
+        <q-avatar
+          size="32px"
+          text-color="white"
+          :style="{ backgroundColor: avatarColor(user.userId) }"
+        >
           {{ initial(user.nickname) }}
         </q-avatar>
       </q-item-section>
@@ -23,6 +27,7 @@
 
 <script setup lang="ts">
 import type { ListUserDto } from '@chat/shared';
+import { avatarColor } from '@/utils/avatar-color';
 
 withDefaults(
   defineProps<{

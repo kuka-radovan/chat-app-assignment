@@ -7,7 +7,8 @@ export type Ack<T> =
   | { ok: false; error: { code: string; message: string } };
 
 export interface ServerToClientEvents {
-  'user:registered': (user: ListUserDto) => void;
+  'user:online': (user: ListUserDto) => void;
+  'user:offline': (userId: string) => void;
   'message:new': (message: MessageDto) => void;
 }
 
@@ -16,5 +17,6 @@ export interface ClientToServerEvents {
     dto: SendMessageDto,
     ack: (response: Ack<MessageDto>) => void,
   ) => void;
+  'user:online': (ack: (response: Ack<ListUserDto[]>) => void) => void;
 }
 

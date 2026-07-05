@@ -1,4 +1,4 @@
-import type { ListUserDto, RegisterUserResponseDto } from '@chat/shared';
+import type { RegisterUserResponseDto } from '@chat/shared';
 import type { User } from '../../domain/user';
 
 export class UserPresenter {
@@ -8,12 +8,5 @@ export class UserPresenter {
       nickname: user.nickname.value,
       token: user.token.value,
     };
-  }
-
-  static toListUsers(users: readonly User[]): ListUserDto[] {
-    return users.map((user) => ({
-      userId: user.id.value,
-      nickname: user.nickname.value,
-    }));
   }
 }

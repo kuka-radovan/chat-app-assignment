@@ -14,17 +14,12 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
 import UsersList from '@/components/UsersList.vue';
 import { useUsersStore } from '@/stores/users';
 
 const usersStore = useUsersStore();
 
 const { participants, error } = storeToRefs(usersStore);
-
-onMounted(() => {
-  void usersStore.loadParticipants();
-});
 </script>
 
 <style scoped lang="scss">

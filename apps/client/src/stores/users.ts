@@ -1,7 +1,6 @@
 import type { ListUserDto } from '@chat/shared';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { fetchUsers } from '@/api/users';
 import { useIdentityStore } from '@/stores/identity';
 
 export const useUsersStore = defineStore('users', () => {
@@ -15,14 +14,8 @@ export const useUsersStore = defineStore('users', () => {
       .sort((a, b) => a.nickname.localeCompare(b.nickname));
   });
 
-  async function loadParticipants(): Promise<void> {
-    error.value = null;
-
-    try {
-      users.value = await fetchUsers();
-    } catch {
-      error.value = 'Could not load users. Please try again.';
-    }
+  function setUsers(next: ListUserDto[]): void {
+    users.value = next;
   }
 
   function upsertUser(user: ListUserDto): void {
@@ -34,10 +27,14 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
+  function removeUser(userId: string): void {
+    users.value = users.value.filter((user) => user.userId !== userId);
+  }
+
   function reset(): void {
     users.value = [];
     error.value = null;
   }
 
-  return { users, error, participants, loadParticipants, upsertUser, reset };
+  return { users, error, participants, setUsers, upsertUser, removeUser, reset };
 });

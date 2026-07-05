@@ -6,5 +6,4 @@ export abstract class UserRepository {
   abstract save(user: User): Promise<void>;
   abstract findByNickname(nickname: Nickname): Promise<User | null>;
   abstract findByToken(token: AuthToken): Promise<User | null>;
-  abstract findAll(): Promise<User[]>;
 }

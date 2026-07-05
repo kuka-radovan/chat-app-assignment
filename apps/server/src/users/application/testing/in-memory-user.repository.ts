@@ -29,11 +29,4 @@ export class InMemoryUserRepository extends UserRepository {
 
     return Promise.resolve(null);
   }
-
-  findAll(): Promise<User[]> {
-    const users = [...this.byNickname.values()].sort(
-      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
-    );
-    return Promise.resolve(users);
-  }
 }

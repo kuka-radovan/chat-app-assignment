@@ -11,13 +11,36 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(config.api
   autoConnect: false,
 });
 
-socket.on('user:registered', (user) => {
+socket.on('connect', () => {
+  void announceOnline();
+});
+
+socket.on('disconnect', () => {
+  useUsersStore().reset();
+});
+
+socket.on('user:online', (user) => {
   useUsersStore().upsertUser(user);
+});
+
+socket.on('user:offline', (userId) => {
+  useUsersStore().removeUser(userId);
 });
 
 socket.on('message:new', (message) => {
   useMessagesStore().addMessage(message);
 });
+
+async function announceOnline(): Promise<void> {
+  try {
+    const ack = await socket.timeout(ACK_TIMEOUT_MS).emitWithAck('user:online');
+    if (ack.ok) {
+      useUsersStore().setUsers(ack.data);
+    }
+  } catch {
+    // The announce failed (timeout or disconnect); it will retry on the next connect.
+  }
+}
 
 export function connectSocket(token: string): void {
   socket.auth = { token };

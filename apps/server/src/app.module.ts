@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { getNestTypeOrmOptions } from './database/typeorm.options';
@@ -11,7 +10,6 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot(getNestTypeOrmOptions()),
     HealthModule,
     UsersModule,
