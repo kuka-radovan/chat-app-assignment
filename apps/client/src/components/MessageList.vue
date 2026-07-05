@@ -6,6 +6,8 @@
 
   <q-scroll-area
     v-else
+    ref="scrollAreaRef"
+    class="col"
     :content-style="{ width: '100%' }"
     :content-active-style="{ width: '100%' }"
   >
@@ -22,9 +24,11 @@
 
 <script setup lang="ts">
 import type { MessageDto } from '@chat/shared';
+import type { QScrollArea } from 'quasar';
+import { nextTick, ref, watch } from 'vue';
 import MessageBubble from '@/components/MessageBubble.vue';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     messages: MessageDto[];
     currentUserId?: string | null;
@@ -33,6 +37,33 @@ withDefaults(
     currentUserId: null,
   },
 );
+
+const scrollAreaRef = ref<QScrollArea | null>(null);
+
+watch(
+  () => [props.messages.length, props.messages.at(-1)?.messageId] as const,
+  () => {
+    void scrollToLatestMessage();
+  },
+);
+
+async function scrollToLatestMessage(): Promise<void> {
+  if (props.messages.length === 0) {
+    return;
+  }
+
+  await nextTick();
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+
+  const area = scrollAreaRef.value;
+  if (!area) {
+    return;
+  }
+
+  area.setScrollPosition('vertical', area.getScroll().verticalSize, 0);
+}
 </script>
 
 <style scoped lang="scss">

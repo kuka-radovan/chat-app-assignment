@@ -7,13 +7,19 @@
 
     <MessageList v-else class="col" :messages="messages" :current-user-id="userId" />
 
-    <MessageInput v-model="message" :sending="sending" :error="sendError" @send="send" />
+    <MessageInput
+      ref="messageInputRef"
+      v-model="message"
+      :sending="sending"
+      :error="sendError"
+      @send="onSend"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import MessageInput from '@/components/MessageInput.vue';
 import MessageList from '@/components/MessageList.vue';
 import { useMessageSender } from '@/composables/useMessageSender';
@@ -27,6 +33,13 @@ const { messages, error } = storeToRefs(messagesStore);
 const { userId } = storeToRefs(identityStore);
 
 const { message, sending, error: sendError, send } = useMessageSender();
+
+const messageInputRef = ref<InstanceType<typeof MessageInput> | null>(null);
+
+async function onSend(): Promise<void> {
+  await send();
+  messageInputRef.value?.focus();
+}
 
 onMounted(() => {
   void messagesStore.loadInitialMessages();

@@ -1,6 +1,7 @@
 <template>
   <div class="message-input-bar q-pa-md">
     <q-input
+      ref="inputRef"
       v-model="message"
       outlined
       dense
@@ -28,7 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import type { QInput } from 'quasar';
+import { computed, ref } from 'vue';
 
 const message = defineModel<string>({ default: '' });
 
@@ -47,7 +49,11 @@ const emit = defineEmits<{
   send: [];
 }>();
 
+defineExpose({ focus });
+
 const canSend = computed(() => message.value.trim().length > 0 && !props.sending);
+
+const inputRef = ref<QInput | null>(null);
 
 function emitSend(): void {
   if (!canSend.value) {
@@ -55,6 +61,10 @@ function emitSend(): void {
   }
 
   emit('send');
+}
+
+function focus(): void {
+  inputRef.value?.focus();
 }
 </script>
 
