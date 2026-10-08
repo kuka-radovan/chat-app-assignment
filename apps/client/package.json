@@ -17,7 +17,7 @@
   "dependencies": {
     "@chat/shared": "workspace:*",
     "@quasar/extras": "^2.0.0",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "color-hash": "^2.0.2",
     "pinia": "^3.0.4",
     "quasar": "^2.20.0",
